@@ -42,14 +42,18 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-export default class CreateAssignmentateSong extends Component {
+export default class CreateAssignment extends Component {
   constructor(props) {
     super(props);
     this.state = {
       fontsLoaded: false,
       previewImage: "image_1",
       dropdownHeight: 40,
-      audio: "",
+      docu: "",
+      std_name:"",
+      std:"",
+      subject:"",
+      topic:"",
     };
   }
 
@@ -62,25 +66,24 @@ export default class CreateAssignmentateSong extends Component {
     this._loadFontsAsync();
   }
 
-  async addStory() {
+  async addData() {
     if (
-      this.state.title &&
-      this.state.description &&
-      this.state.story &&
-      this.state.moral
+      this.state.std_name &&
+      this.state.std &&
+      this.state.subject &&
+      this.state.topic
     ) {
       var d = new Date();
-      let storyData = {
-        preview_image: this.state.previewImage,
-        title: this.state.title,
-        description: this.state.description,
-        story: this.state.story,
-        moral: this.state.moral,
+      let docData = {
+        std_name: this.state.std_name,
+        std: this.state.std,
+        subject: this.state.subject,
+        topic: this.state.topic,
         created_on: d.toString(),
         author_uid: uid,
-        likes: 0,
+        docu:""
       };
-      console.log(storyData);
+      console.log(docData);
 
       const db = getDatabase();
       set(ref(db, "/posts/" + Math.random().toString(36).slice(2)), {
@@ -98,105 +101,60 @@ export default class CreateAssignmentateSong extends Component {
     }
   }
   handleDocumentSelection = async () => {
-    const result = await DocumentPicker.getDocumentAsync({});
+    const result = await DocumentPicker.getDocumentAsync({type:"pdf"});
     if (result.type === "success") {
       console.log(result.uri);
-      this.setState({ audio: result.uri });
-      this.uploadSong(this.state.audio);
+      this.setState({ docu: result.uri });
+      this.uploadDocu(this.state.docu);
     }
   };
-  uploadSong = async (uri) => {
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function () {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function (e) {
-        console.log(e);
-        reject(new TypeError("network failed"));
-      };
-      xhr.responseType = "blob";
-      xhr.open("GET", uri, true);
-      xhr.send(null);
-    });
-    try {
-      const storage = getStorage();
-      const storageRef = aref(storage, `songs/song-${uid}`);
-      uploadBytes(storageRef, blob).then((snapshot) => {
-        console.log("uploadbytes");
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  uploadDocu = async (uri) => {
+     const blob = await new Promise((resolve, reject) => {
+       const xhr = new XMLHttpRequest();
+       xhr.onload = function () {
+         resolve(xhr.response);
+       };
+       xhr.onerror = function (e) {
+         console.log(e);
+         reject(new TypeError("network failed"));
+       };
+       xhr.responseType = "blob";
+       xhr.open("GET", uri, true);
+       xhr.send(null);
+     });
+     try {
+       const storage = getStorage();
+       const storageRef = aref(storage, `songs/song-${uid}`);
+       uploadBytes(storageRef, blob).then((snapshot) => {
+         console.log("uploadbytes");
+       });
+     } catch (error) {
+       console.log(error);
+     }
   };
   render() {
     if (this.state.fontsLoaded) {
       SplashScreen.hideAsync();
-      let preview_images = {
-        image_1: require("../assets/music_image_1.jpg"),
-        image_2: require("../assets/music_image_2.jpg"),
-        image_3: require("../assets/music_image_3.jpg"),
-        image_4: require("../assets/music_image_4.png"),
-        image_5: require("../assets/music_image_5.png"),
-      };
+      
       return (
         <View style={styles.container}>
           <SafeAreaView style={styles.droidSafeArea} />
 
           <View style={styles.appTitle}>
             <View style={styles.appIcon}>
-              <Image
-                source={require("../assets/music-logo.png")}
-                style={styles.iconImage}
-              ></Image>
+              
             </View>
             <View style={styles.appTitleTextContainer}>
-              <Text style={styles.appTitleText}>New Story</Text>
+              <Text style={styles.appTitleText}>New Assignment</Text>
             </View>
           </View>
           <View style={styles.fieldsContainer}>
-            <Image
-              source={preview_images[this.state.previewImage]}
-              style={styles.previewImage}
-            ></Image>
-            <View style={{ height: RFValue(this.state.dropdownHeight) }}>
-              <DropDownPicker
-                items={[
-                  { label: "Image 1", value: "image_1" },
-                  { label: "Image 2", value: "image_2" },
-                  { label: "Image 3", value: "image_3" },
-                  { label: "Image 4", value: "image_4" },
-                  { label: "Image 5", value: "image_5" },
-                ]}
-                defaultValue={this.state.previewImage}
-                open={this.state.dropdownHeight == 170 ? true : false}
-                onOpen={() => {
-                  this.setState({ dropdownHeight: 170 });
-                }}
-                onClose={() => {
-                  this.setState({ dropdownHeight: 40 });
-                }}
-                style={{
-                  backgroundColor: "transparent",
-                  borderWidth: 1,
-                  borderColor: "white",
-                }}
-                textStyle={{
-                  color: this.state.dropdownHeight == 170 ? "black" : "white",
-                  fontFamily: "Bubblegum-Sans",
-                }}
-                onSelectItem={(item) =>
-                  this.setState({
-                    previewImage: item.value,
-                  })
-                }
-              />
-            </View>
+            
             <ScrollView>
               <TextInput
                 style={styles.inputFont}
-                onChangeText={(title) => this.setState({ title })}
-                placeholder={"Title"}
+                onChangeText={(value) => this.setState({ std_name:value })}
+                placeholder={"student name"}
                 placeholderTextColor="white"
               />
 
@@ -206,10 +164,8 @@ export default class CreateAssignmentateSong extends Component {
                   styles.inputFontExtra,
                   styles.inputTextBig,
                 ]}
-                onChangeText={(description) => this.setState({ description })}
-                placeholder={"Description"}
-                multiline={true}
-                numberOfLines={4}
+                onChangeText={(value) => this.setState({ std:value })}
+                placeholder={"std"}               
                 placeholderTextColor="white"
               />
               <TextInput
@@ -218,8 +174,8 @@ export default class CreateAssignmentateSong extends Component {
                   styles.inputFontExtra,
                   styles.inputTextBig,
                 ]}
-                onChangeText={(story) => this.setState({ story })}
-                placeholder={"Story"}
+                onChangeText={(value) => this.setState({ subject:value })}
+                placeholder={"subject"}
                 multiline={true}
                 numberOfLines={20}
                 placeholderTextColor="white"
@@ -231,19 +187,19 @@ export default class CreateAssignmentateSong extends Component {
                   styles.inputFontExtra,
                   styles.inputTextBig,
                 ]}
-                onChangeText={(moral) => this.setState({ moral })}
-                placeholder={"Moral of the story"}
+                onChangeText={(value) => this.setState({ topic:value })}
+                placeholder={"topic"}
                 multiline={true}
                 numberOfLines={4}
                 placeholderTextColor="white"
               />
               <View style={styles.submitButton}>
                 <Button
-                  title="upload audio 📑"
+                  title="upload document 📑"
                   onPress={() => this.handleDocumentSelection()}
                 />
                 <Button
-                  onPress={() => this.addStory()}
+                  onPress={() => this.addData()}
                   title="Submit"
                   color="#841584"
                 />

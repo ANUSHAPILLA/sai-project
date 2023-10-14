@@ -21,6 +21,7 @@ SplashScreen.preventAutoHideAsync();
 let customFonts = {
   CherryBombOne: require("../assets/fonts/CherryBombOne-Regular.ttf"),
 };
+import { getStorage, ref as refi, uploadBytes, getDownloadURL } from "firebase/storage";
 
 let songs = [];
 import { getDatabase, ref, onValue } from "firebase/database";
@@ -45,6 +46,7 @@ export default class Feed extends Component {
       fontsLoaded: false,
       light_theme: true,
       stories: [],
+      image:""
     };
   }
 
@@ -57,7 +59,33 @@ export default class Feed extends Component {
     this._loadFontsAsync();
     this.fetchStories();
     this.fetchUser();
+    this.fetchdocument();
   }
+  fetchdocument = () => {
+    const storage = getStorage();
+    getDownloadURL(refi(storage, `songs/song-${uid}`))
+      .then((url) => {
+        // `url` is the download URL for 'images/stars.jpg'
+
+        // This can be downloaded directly:
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        xhr.onload = (event) => {
+          const blob = xhr.response;
+        };
+        xhr.open("GET", url);
+        xhr.send();
+
+        this.setState({
+          image:
+            "https://firebasestorage.googleapis.com/v0/b/saiproject-d002e.appspot.com/o/songs%2Fsong-VAS73SdU06QOCa7kBvM4oQymIDS2?alt=media&token=21a6f016-74be-4f01-808c-bd67e2aa7f61",
+        });
+        console.log("image"+this.state.image)
+      })
+      .catch((error) => {
+        // Handle any errors
+      });
+  };
 
   fetchStories = () => {
     const db = getDatabase();
@@ -73,28 +101,24 @@ export default class Feed extends Component {
         });
       }
       this.setState({ stories: stories });
-      console.log(stories)
+      console.log(stories);
       this.props.setUpdateToFalse();
     });
-   
-        
   };
-  
 
   fetchUser = () => {
     let theme;
     const db = getDatabase();
-const starCountRef = ref(db, "/users/" + uid);
-      onValue(starCountRef, (snapshot) => {
-        theme = snapshot.val().current_theme;
-         this.setState({ light_theme: theme === "light" });
-      });
-   
+    const starCountRef = ref(db, "/users/" + uid);
+    onValue(starCountRef, (snapshot) => {
+      theme = snapshot.val().current_theme;
+      this.setState({ light_theme: theme === "light" });
+    });
   };
 
   renderItem = ({ item: story }) => {
-    console.log(story)
-     return <SongCard story={story} />;
+    console.log(story);
+    return <SongCard story={story} />;
   };
 
   keyExtractor = (item, index) => index.toString();
@@ -124,31 +148,19 @@ const starCountRef = ref(db, "/users/" + uid);
                     : styles.appTitleText
                 }
               >
-                Music App
+                Assignments
               </Text>
             </View>
           </View>
-          {!this.state.stories[0] ? (
-            <View style={styles.noStories}>
-              <Text
-                style={
-                  this.state.light_theme
-                    ? styles.noStoriesTextLight
-                    : styles.noStoriesText
-                }
-              >
-                No Stories Available
-              </Text>
-            </View>
-          ) : (
-            <View style={styles.cardContainer}>
-              <FlatList
-                keyExtractor={this.keyExtractor}
-                data={this.state.stories}
-                renderItem={this.renderItem}
-              />
-            </View>
-          )}
+
+          <View style={styles.cardContainer}>
+            <Image
+              source={{
+                uri: "https://firebasestorage.googleapis.com/v0/b/saiproject-d002e.appspot.com/o/songs%2Fsong-VAS73SdU06QOCa7kBvM4oQymIDS2?alt=media&token=21a6f016-74be-4f01-808c-bd67e2aa7f61",
+              }}
+            />
+          </View>
+
           <View style={{ flex: 0.08 }} />
         </View>
       );

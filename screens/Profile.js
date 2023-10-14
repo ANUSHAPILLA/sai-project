@@ -118,6 +118,7 @@ selectPicture = async () => {
   toggleSwitch() {
     const previous_state = this.state.isEnabled;
     const theme = !this.state.isEnabled ? "dark" : "light";
+    console.log(theme)
     var updates = {};
     updates["users/" + uid + "/current_theme"] =
       theme;
@@ -139,6 +140,7 @@ selectPicture = async () => {
   }
 
   async fetchUser() {
+    
     let theme,name
   const db=getDatabase()
     const starCountRef = ref(db, "/users/" + uid);
@@ -151,6 +153,7 @@ selectPicture = async () => {
       isEnabled: theme === "light" ? false : true,
       name: name,
     });
+    console.log(this.state.light_theme)
   }
   logOutButton() {
    

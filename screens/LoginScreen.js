@@ -86,7 +86,7 @@ export default class LoginScreen extends Component {
             source={require("../assets/wallpaper.jpg")}
             style={styles.backgroundImage}
           >
-            <Text style={styles.appTitleText}>Music</Text>
+            <Text style={styles.appTitleText}>Assignments</Text>
             <Image source={appIcon} style={styles.appIcon} />
 
             <TextInput

@@ -106,13 +106,13 @@ export default class RegisterScreen extends Component {
             <TextInput
               style={styles.textinput}
               onChangeText={(text) => this.setState({ first_name: text })}
-              placeholder={"First name"}
+              placeholder={"Student first name"}
               placeholderTextColor={"#FFFFFF"}
             />
             <TextInput
               style={styles.textinput}
               onChangeText={(text) => this.setState({ last_name: text })}
-              placeholder={"Last name"}
+              placeholder={"Student Last name"}
               placeholderTextColor={"#FFFFFF"}
             />
             <TextInput

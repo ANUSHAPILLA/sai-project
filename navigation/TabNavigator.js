@@ -4,7 +4,7 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { RFValue } from "react-native-responsive-fontsize";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Feed from "../screens/Feed";
-import CreateSong from "../screens/CreateSong";
+import CreateAssignment from "../screens/CreateAssignment";
 import firebase from "firebase/compat/app";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -37,7 +37,7 @@ export default class BottomTabNavigator extends Component {
   };
 
   renderStory = (props) => {
-    return <CreateSong setUpdateToTrue={this.changeUpdated} {...props} />;
+    return <CreateAssignment setUpdateToTrue={this.changeUpdated} {...props} />;
   };
 
   changeUpdated = () => {
@@ -94,7 +94,7 @@ export default class BottomTabNavigator extends Component {
           options={{ unmountOnBlur: true }}
         />
         <Tab.Screen
-          name="Create Song"
+          name="Create Assignment"
           component={this.renderStory}
           options={{ unmountOnBlur: true }}
         />
